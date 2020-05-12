@@ -9,6 +9,8 @@
 import UIKit
 import MapKit
 import CoreLocation
+import Alamofire
+import AlamofireImage
 
 class MapVC: UIViewController, UIGestureRecognizerDelegate {
 
@@ -27,10 +29,12 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     var collectionView : UICollectionView?
     var flowLayout = UICollectionViewFlowLayout()
     
+    var imageUrlArray = [String]()
+    var imageArray = [UIImage]()
+    
     override func viewDidLoad(){
         super.viewDidLoad()
         
-       mapView.delegate = self
        locationManager.delegate = self
        configureLocationServices()
        addDoubleTap()
@@ -41,6 +45,11 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         collectionView?.dataSource = self
         collectionView?.backgroundColor = #colorLiteral(red: 0.1294117719, green: 0.2156862766, blue: 0.06666667014, alpha: 1)
         pullUpView.addSubview(collectionView!)
+        locationManager.startUpdatingLocation()
+        locationManager.distanceFilter = kCLDistanceFilterNone
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        mapView.showsUserLocation = true
+        mapView.delegate = self
     }
     
     func addDoubleTap(){
@@ -60,6 +69,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     @objc func animateViewDowsn(){
         
+        cancelAllSessions()
         pullUpHeightViewConstraint.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
@@ -141,6 +151,8 @@ extension MapVC: MKMapViewDelegate{
         removePin()
         removeSpinner()
         removeProgressLabel()
+        cancelAllSessions()
+        
         animateViewUp()
         addSwipe()
         addSpinner()
@@ -154,7 +166,19 @@ extension MapVC: MKMapViewDelegate{
         
         let coordinateRegion = MKCoordinateRegion(center: touchCoordinate, latitudinalMeters: regionRadius * 2.0, longitudinalMeters: regionRadius * 2.0)
         mapView.setRegion(coordinateRegion, animated: true)
-        
+        //
+        retriveUrls(forAnnotation: annotation) { (finished) in
+            
+            if finished {
+                self.retriveImages { (finished) in
+                    
+                    if finished {
+                        self.removeSpinner()
+                        self.removeProgressLabel()
+                    }
+                }
+            }
+        }
     }
     
     func removePin() {
@@ -162,6 +186,47 @@ extension MapVC: MKMapViewDelegate{
         for annotation in mapView.annotations {
             
             mapView.removeAnnotation(annotation)
+        }
+    }
+    
+    func retriveUrls(forAnnotation annotation: DroppablePin, handler: @escaping (_ status: Bool) -> () ) {
+        imageUrlArray = []
+        
+        AF.request(flickrURL(forApiKey: apiKey, withAnnotation: annotation, numberOfPhotos: 40)).responseJSON { (response) in
+            
+            guard let json = response.value as? Dictionary<String, AnyObject> else { return }
+            let photosDict = json["photos"] as! Dictionary<String, AnyObject>
+            let photosDictArray = photosDict["photo"] as! [Dictionary<String, AnyObject>]
+            for photo in photosDictArray {
+                let postUrl = "https://farm\(photo["farm"]!).staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_h_d.jpg"
+                self.imageUrlArray.append(postUrl)
+            }
+            handler(true)
+        }
+    }
+    //
+    func retriveImages(handler: @escaping (_ status: Bool) -> ()) {
+        imageArray = []
+        
+        for url in imageUrlArray {
+            AF.request(url).responseImage { (response) in
+                guard let image = response.value else { return }
+                self.imageArray.append(image)
+                self.progressLabel?.text = "\(self.imageArray.count)/40 IMAGES DOWNLOADED"
+                
+                if self.imageArray.count == self.imageUrlArray.count {
+                    handler(true)
+                }
+            }
+        }
+    }
+    
+    func cancelAllSessions() {
+        
+        AF.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+            
+            sessionDataTask.forEach({ $0.cancel() })
+            downloadData.forEach({ $0.cancel() })
         }
     }
 }

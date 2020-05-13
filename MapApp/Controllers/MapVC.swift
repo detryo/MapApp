@@ -43,7 +43,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         collectionView?.register(PhotoCell.self, forCellWithReuseIdentifier: "PhotoCell")
         collectionView?.delegate = self
         collectionView?.dataSource = self
-        collectionView?.backgroundColor = #colorLiteral(red: 0.1294117719, green: 0.2156862766, blue: 0.06666667014, alpha: 1)
+        collectionView?.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         pullUpView.addSubview(collectionView!)
         locationManager.startUpdatingLocation()
         locationManager.distanceFilter = kCLDistanceFilterNone
@@ -107,7 +107,6 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         progressLabel?.font = UIFont(name: "Avenir Next", size: 18)
         progressLabel?.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         progressLabel?.textAlignment = .center
-        progressLabel?.text = "Load Images"
         collectionView?.addSubview(progressLabel!)
     }
     
@@ -153,6 +152,11 @@ extension MapVC: MKMapViewDelegate{
         removeProgressLabel()
         cancelAllSessions()
         
+        imageUrlArray = []
+        imageArray = []
+        
+        collectionView?.reloadData()
+        
         animateViewUp()
         addSwipe()
         addSpinner()
@@ -166,7 +170,7 @@ extension MapVC: MKMapViewDelegate{
         
         let coordinateRegion = MKCoordinateRegion(center: touchCoordinate, latitudinalMeters: regionRadius * 2.0, longitudinalMeters: regionRadius * 2.0)
         mapView.setRegion(coordinateRegion, animated: true)
-        //
+        
         retriveUrls(forAnnotation: annotation) { (finished) in
             
             if finished {
@@ -175,6 +179,7 @@ extension MapVC: MKMapViewDelegate{
                     if finished {
                         self.removeSpinner()
                         self.removeProgressLabel()
+                        self.collectionView?.reloadData()
                     }
                 }
             }
@@ -190,7 +195,6 @@ extension MapVC: MKMapViewDelegate{
     }
     
     func retriveUrls(forAnnotation annotation: DroppablePin, handler: @escaping (_ status: Bool) -> () ) {
-        imageUrlArray = []
         
         AF.request(flickrURL(forApiKey: apiKey, withAnnotation: annotation, numberOfPhotos: 40)).responseJSON { (response) in
             
@@ -204,9 +208,8 @@ extension MapVC: MKMapViewDelegate{
             handler(true)
         }
     }
-    //
+    
     func retriveImages(handler: @escaping (_ status: Bool) -> ()) {
-        imageArray = []
         
         for url in imageUrlArray {
             AF.request(url).responseImage { (response) in
@@ -254,13 +257,23 @@ extension MapVC : UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return imageArray.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
+        let imageFromIndex = imageArray[indexPath.row]
+        let imageView = UIImageView(image: imageFromIndex)
+        cell.addSubview(imageView)
         
-        return cell!
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        guard let popVC = storyboard?.instantiateViewController(identifier: "PopVC") as? PopVC else { return }
+        popVC.initData(forImage: imageArray[indexPath.row])
+        present(popVC, animated: true, completion: nil)
     }
 }

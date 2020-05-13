@@ -15,6 +15,7 @@
 		361D4BA72459D3DF0084D1C2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 361D4BA52459D3DF0084D1C2 /* Main.storyboard */; };
 		361D4BA92459D3E20084D1C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 361D4BA82459D3E20084D1C2 /* Assets.xcassets */; };
 		361D4BAC2459D3E20084D1C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 361D4BAA2459D3E20084D1C2 /* LaunchScreen.storyboard */; };
+		364AE483246AC21700C6A29D /* PopVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 364AE482246AC21700C6A29D /* PopVC.swift */; };
 		36E99C69245C78D500DFC895 /* DroppablePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E99C68245C78D500DFC895 /* DroppablePin.swift */; };
 		C71FC9B51251B672A909718B /* Pods_MapApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40B80D17F71FDC32202DF59 /* Pods_MapApp.framework */; };
 /* End PBXBuildFile section */
@@ -31,6 +32,7 @@
 		361D4BA82459D3E20084D1C2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		361D4BAB2459D3E20084D1C2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		361D4BAD2459D3E20084D1C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		364AE482246AC21700C6A29D /* PopVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopVC.swift; sourceTree = "<group>"; };
 		36E99C68245C78D500DFC895 /* DroppablePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DroppablePin.swift; sourceTree = "<group>"; };
 		8EBA54BA0BE1A34F0C6153E3 /* Pods-MapApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MapApp/Pods-MapApp.debug.xcconfig"; sourceTree = "<group>"; };
 		F40B80D17F71FDC32202DF59 /* Pods_MapApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				361D4BA32459D3DF0084D1C2 /* MapVC.swift */,
+				364AE482246AC21700C6A29D /* PopVC.swift */,
 				361D4B9F2459D3DF0084D1C2 /* AppDelegate.swift */,
 				361D4BA12459D3DF0084D1C2 /* SceneDelegate.swift */,
 			);
@@ -248,6 +251,7 @@
 			files = (
 				361D4BA42459D3DF0084D1C2 /* MapVC.swift in Sources */,
 				3602FC682462D2B400331192 /* PhotoCell.swift in Sources */,
+				364AE483246AC21700C6A29D /* PopVC.swift in Sources */,
 				36E99C69245C78D500DFC895 /* DroppablePin.swift in Sources */,
 				361D4BA02459D3DF0084D1C2 /* AppDelegate.swift in Sources */,
 				361D4BA22459D3DF0084D1C2 /* SceneDelegate.swift in Sources */,
@@ -399,6 +403,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 347CFEP3N9;
 				INFOPLIST_FILE = MapApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -418,6 +423,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 347CFEP3N9;
 				INFOPLIST_FILE = MapApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
